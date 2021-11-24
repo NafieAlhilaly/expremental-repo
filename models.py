@@ -6,3 +6,4 @@ class Schedule(database.Base):
     __tablename__ = "da"
     id = sql.Column(sql.Integer, primary_key=True)
     date = sql.Column(sql.String)
+    message = sql.Column(sql.String)
