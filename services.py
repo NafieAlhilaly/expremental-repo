@@ -11,8 +11,8 @@ def get_db():
 def create_database():
     db.Base.metadata.create_all(bind=db.engine)
 
-async def add_schedule(date: str, db):
-    schedule = models.Schedule(date=date)
+async def add_schedule(date: str, msg: str, db):
+    schedule = models.Schedule(date=date, message=msg)
     db.add(schedule)
     db.commit()
     db.refresh(schedule)
