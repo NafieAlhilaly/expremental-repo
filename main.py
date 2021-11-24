@@ -37,5 +37,5 @@ async def add_schedule(
     date: str = fastapi.Form(...),
     db: orm.Session = fastapi.Depends(services.get_db)):
 
-    await services.add_schedule(date, db)
+    await services.add_schedule(date,message, db=db)
     return {"message":"added"}
