@@ -1,2 +1,4 @@
 .env
 __pycache__
+database.db
+sqlite3.exe
