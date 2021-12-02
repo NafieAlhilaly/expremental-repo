@@ -7,3 +7,5 @@ class Schedule(database.Base):
     id = sql.Column(sql.Integer, primary_key=True)
     date = sql.Column(sql.String)
     message = sql.Column(sql.String)
+    reciever_email = sql.Column(sql.String, nullable=False)
+    sent_from = sql.Column(sql.String,nullable=True, default="from anonymouse") 
