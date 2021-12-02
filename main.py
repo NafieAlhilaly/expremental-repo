@@ -1,3 +1,4 @@
+from typing import Optional
 import fastapi
 import sqlalchemy.orm as orm
 import services
@@ -6,36 +7,48 @@ import time
 import datetime
 import database
 from fastapi_utils.tasks import repeat_every
+from send_email import send_email
 
 app = fastapi.FastAPI()
 
 def check_date():
     """
-    check database everyday and run task if today date == task date
+    check database periodically and run task if today date == task date
     """
     db = database.SessionLocal()
-    now = datetime.datetime.now().strftime("%m/%d/%Y")
-    data = db.query(models.Schedule.date).all()
-    for schedule_time in data:
-        # from string to datetime obj
-        date = datetime.datetime.strptime(date, "%m/%d/%Y")
-
-        if time.mktime(now.timetuple()) == time.mktime(date.timetuple()):
+    today_date = datetime.datetime.now().strftime("%m/%d/%Y")
+    data = db.query(
+        models.Schedule.id,
+        models.Schedule.date,
+        models.Schedule.message,
+        models.Schedule.reciever_email,
+        models.Schedule.sent_from 
+        ).filter(models.Schedule.date == today_date).all()
+    print(today_date)
+    if data:
+        for schedule_time in data:
             """
-            run task if task date is today
+            send scheduled messages
             """
-        
+            
 
 @app.on_event("startup")
-@repeat_every(seconds= 86400)  # 86400 = 1 day
+@repeat_every(seconds=10)  # 86400 seconds = 1 day
 def check_date_task() -> None:
     check_date()
 
 @app.post("/add_schedule")
 async def add_schedule(
-    message: str = fastapi.Form(...),
+    msg: str = fastapi.Form(...),
     date: str = fastapi.Form(...),
+    reciever_email: str = fastapi.Form(...),
+    sent_from: str = fastapi.Form("anonymose"),
     db: orm.Session = fastapi.Depends(services.get_db)):
 
-    await services.add_schedule(date,message, db=db)
+    await services.add_schedule(
+        msg=msg,
+        date=date, 
+        reciever_email=reciever_email, 
+        sent_from=sent_from, 
+        db=db)
     return {"message":"added"}
