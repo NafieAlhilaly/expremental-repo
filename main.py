@@ -1,6 +1,8 @@
 from typing import Optional
 import fastapi
+import logging
 import sqlalchemy.orm as orm
+from starlette.requests import Request
 import services
 import models
 import time
@@ -11,7 +13,7 @@ from send_email import send_email
 
 app = fastapi.FastAPI()
 
-def check_date():
+async def check_date():
     """
     check database periodically and run task if today date == task date
     """
@@ -24,18 +26,23 @@ def check_date():
         models.Schedule.reciever_email,
         models.Schedule.sent_from 
         ).filter(models.Schedule.date == today_date).all()
-    print(today_date)
+    
     if data:
-        for schedule_time in data:
-            """
-            send scheduled messages
-            """
+        for msg in data:
+            subject: str = f"A message from {msg[4]}"
             
+            await send_email(subject=subject, email_to=msg[3], body={"msg":msg[2]})
+            
+            db.query(models.Schedule).filter(models.Schedule.id == msg[0]).delete()
+            db.commit()
+            
+    print("no schedules found, set back and relax")
 
 @app.on_event("startup")
-@repeat_every(seconds=10)  # 86400 seconds = 1 day
-def check_date_task() -> None:
-    check_date()
+@repeat_every(seconds=86400)  # 86400 seconds = 1 day
+async def check_date_task() -> None:
+    await check_date()
+
 
 @app.post("/add_schedule")
 async def add_schedule(
