@@ -1,3 +1,3 @@
-# expremental-repo
+# scheduled-msg
 
-testing scheduling giving messages/emails and sending on the giving time with FastAPI
+scheduling messages/emails and then send it on the giving time with FastAPI
