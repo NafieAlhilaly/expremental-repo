@@ -1,5 +1,4 @@
 import sqlalchemy as sql
-import sqlalchemy.orm as orm
 import database
 
 class Schedule(database.Base):

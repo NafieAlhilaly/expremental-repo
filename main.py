@@ -1,11 +1,9 @@
 from typing import Optional
 import fastapi
-import logging
 import sqlalchemy.orm as orm
 from starlette.requests import Request
 import services
 import models
-import time
 import datetime
 import database
 from fastapi_utils.tasks import repeat_every
@@ -39,7 +37,7 @@ async def check_date():
     print("no schedules found, set back and relax")
 
 @app.on_event("startup")
-@repeat_every(seconds=86400)  # 86400 seconds = 1 day
+@repeat_every(seconds=14400)  # 86400 seconds = 1 day, 3600 seconds = 1 hour
 async def check_date_task() -> None:
     await check_date()
 
