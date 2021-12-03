@@ -1,7 +1,5 @@
-from typing import Optional
 import fastapi
 import sqlalchemy.orm as orm
-from starlette.requests import Request
 import services
 import models
 import datetime
